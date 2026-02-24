@@ -44,7 +44,7 @@ async function loadMessages(){
 
 // Send message
 sendBtn.onclick = async () => {
-  if(!currentRoom) return;
+  if(!currentRoom) return alert("Select a server first!");
   const profile = getProfile();
   const text = messageInput.value.trim();
   const file = fileInput.files[0];
