@@ -1,47 +1,40 @@
 // scripts/rooms.js
-import { db, auth } from './firebase.js';
-import { collection, onSnapshot, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { db } from "./firebase.js";
+import { collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const roomList = document.getElementById("roomList");
-const createRoomBtn = document.getElementById("createRoom");
 const newRoomInput = document.getElementById("newRoomName");
+const createRoomBtn = document.getElementById("createRoom");
 
-let currentRoomId = null;
+let currentRoom = "";
 
-function renderRooms(rooms) {
+// Load rooms
+const roomsRef = collection(db, "rooms");
+onSnapshot(roomsRef, snapshot => {
   roomList.innerHTML = "";
-  rooms.forEach(room => {
+  snapshot.forEach(doc => {
     const li = document.createElement("li");
-    li.textContent = `${room.data().name} (${room.data().ownerName})`;
-    if (room.data().owner === auth.currentUser.uid) li.textContent += " 👑";
-    li.onclick = () => loadRoom(room.id, room.data());
+    li.textContent = doc.id;
+    if (doc.id === currentRoom) li.classList.add("active");
+    if (doc.data().owner) li.textContent += " 👑"; // Crown for owner
+    li.onclick = () => selectRoom(doc.id);
     roomList.appendChild(li);
   });
-}
-
-// Listen to rooms
-onSnapshot(collection(db, "rooms"), snapshot => {
-  renderRooms(snapshot.docs);
 });
 
 // Create room
 createRoomBtn.onclick = async () => {
   const name = newRoomInput.value.trim();
-  if (!name) return alert("Enter a room name");
-  const roomRef = await addDoc(collection(db, "rooms"), {
-    name,
-    owner: auth.currentUser.uid,
-    ownerName: "Owner",
-    createdAt: serverTimestamp()
-  });
+  if (!name) return;
+  await addDoc(roomsRef, { name, owner: true });
   newRoomInput.value = "";
-  currentRoomId = roomRef.id;
 };
 
-// Load room function (sets current room, loads messages)
-function loadRoom(roomId, roomData) {
-  currentRoomId = roomId;
-  document.getElementById("roomTitle").textContent = roomData.name;
-  // Trigger chat.js to load messages for this room
-  document.dispatchEvent(new CustomEvent("roomChanged", { detail: roomData }));
+// Select room
+export function selectRoom(name) {
+  currentRoom = name;
+  document.getElementById("roomTitle").textContent = `Room: ${name}`;
+  onRoomSelected(name);
 }
+
+export let onRoomSelected = () => {}; // placeholder, chat.js sets it
