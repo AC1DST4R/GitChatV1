@@ -1,15 +1,27 @@
 import { db, auth } from "./firebase.js";
-import { collection, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { collection, doc, setDoc, onSnapshot, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const roomList = document.getElementById("roomList");
 const newRoomInput = document.getElementById("newRoomName");
 const createRoomBtn = document.getElementById("createRoom");
 const memberListDiv = document.getElementById("memberList");
+const clearChatBtn = document.getElementById("clearChatBtn");
+const disbandBtn = document.getElementById("disbandBtn");
 
 let currentRoom = "";
 let currentUserUid = "";
+let isOwner = false;
+let profile = { username:"Anon", avatar:"" };
 
 auth.onAuthStateChanged(user => { if(user) currentUserUid = user.uid; });
+
+// Profile creator
+const overlay = document.getElementById("profileOverlay");
+document.getElementById("startChat").onclick = () => {
+  profile.username = document.getElementById("usernameInput").value || "Anon";
+  profile.avatar = document.getElementById("avatarInput").value || "";
+  overlay.style.display = "none";
+};
 
 // Load rooms
 const roomsRef = collection(db, "rooms");
@@ -41,17 +53,20 @@ createRoomBtn.onclick = async () => {
 // Select room
 export function selectRoom(name, ownerUid){
   currentRoom = name;
+  isOwner = ownerUid === currentUserUid;
   document.getElementById("roomTitle").textContent = name;
   addCurrentUserToMembers();
   loadMembers();
-  onRoomSelected(name, ownerUid === currentUserUid);
+  clearChatBtn.style.display = isOwner?"block":"none";
+  disbandBtn.style.display = isOwner?"block":"none";
+  onRoomSelected(currentRoom, isOwner);
 }
 
 // Add user to members
 async function addCurrentUserToMembers(){
   if(!currentRoom) return;
   const memberRef = doc(db, "rooms", currentRoom, "members", currentUserUid);
-  await setDoc(memberRef, { username:"Anon", uid: currentUserUid });
+  await setDoc(memberRef, { username: profile.username, uid: currentUserUid, avatar: profile.avatar });
 }
 
 // Load members
@@ -69,5 +84,23 @@ function loadMembers(){
   });
 }
 
-// Placeholder for chat.js hook
+// Clear chat logs (owner)
+clearChatBtn.onclick = async () => {
+  if(!currentRoom) return;
+  const messagesRef = collection(db, "rooms", currentRoom, "messages");
+  const snapshot = await onSnapshot(messagesRef, s => {
+    s.forEach(msg => deleteDoc(doc(messagesRef, msg.id)));
+  });
+};
+
+// Disband server
+disbandBtn.onclick = async () => {
+  if(!currentRoom) return;
+  const roomRef = doc(db, "rooms", currentRoom);
+  await deleteDoc(roomRef);
+  currentRoom="";
+  document.getElementById("roomTitle").textContent="Select a room";
+};
+
 export let onRoomSelected = () => {};
+export let getProfile = () => profile;
