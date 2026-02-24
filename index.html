@@ -7,6 +7,13 @@
 </head>
 <body>
 
+<div id="profileOverlay">
+  <h2>Enter Your Profile</h2>
+  <input type="text" id="usernameInput" placeholder="Username">
+  <input type="text" id="avatarInput" placeholder="Avatar URL (optional)">
+  <button id="startChat">Start Chat</button>
+</div>
+
 <div id="sidebar">
   <h2>Servers</h2>
   <ul id="roomList"></ul>
@@ -14,6 +21,8 @@
   <button id="createRoom">Create Room</button>
   <h3>Members</h3>
   <div id="memberList"></div>
+  <button id="clearChatBtn" style="display:none;">Clear Chat Logs</button>
+  <button id="disbandBtn" style="display:none;">Disband Server</button>
 </div>
 
 <div id="chatContainer">
@@ -25,7 +34,6 @@
   <button id="sendMsg">Send</button>
 </div>
 
-<!-- Firebase + scripts -->
 <script type="module" src="scripts/firebase.js"></script>
 <script type="module" src="scripts/rooms.js"></script>
 <script type="module" src="scripts/chat.js"></script>
