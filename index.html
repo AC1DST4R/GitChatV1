@@ -1,1 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🔥 GitChat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e2f;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
 
+    h1 { margin-top: 20px; }
+
+    #chatContainer {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #444;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #2c2c3c;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      cursor: pointer;
+      background: #5865F2;
+      color: white;
+    }
+
+    .message {
+      text-align: left;
+      margin-bottom: 5px;
+    }
+
+    .username {
+      font-weight: bold;
+      color: #00d4ff;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🔥 GitChat</h1>
+
+<div id="roomSelection">
+  <input type="text" id="username" placeholder="Enter Username">
+  <input type="text" id="roomInput" placeholder="Enter Room Name">
+  <button onclick="joinRoom()">Join / Create Room</button>
+</div>
+
+<div id="chatContainer">
+  <h2 id="roomTitle"></h2>
+  <div id="messages"></div>
+  <input type="text" id="messageInput" placeholder="Type message..." onkeydown="if(event.key==='Enter') sendMessage()">
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script type="module">
+  // Import Firebase modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { 
+    getFirestore, collection, addDoc, onSnapshot, query, orderBy 
+  } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+  // 🔥 REPLACE with your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCXi-M0wMZT165T9FHCK8Dw-WJK_I1MuDg",
+    authDomain: "gitchat-backend.firebaseapp.com",
+    projectId: "gitchat-backend",
+    storageBucket: "gitchat-backend.firebasestorage.app",
+    messagingSenderId: "385257284178",
+    appId: "1:385257284178:web:20d7ce32ba1b1ed554f58b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // Anonymous login
+  signInAnonymously(auth).then(() => console.log("Logged in anonymously ✅"));
+
+  let currentRoom = "";
+  let username = "";
+
+  window.joinRoom = function () {
+    username = document.getElementById("username").value.trim();
+    currentRoom = document.getElementById("roomInput").value.trim();
+
+    if (!username || !currentRoom) {
+      alert("Enter username and room name!");
+      return;
+    }
+
+    document.getElementById("roomSelection").style.display = "none";
+    document.getElementById("chatContainer").style.display = "block";
+    document.getElementById("roomTitle").innerText = "Room: " + currentRoom;
+
+    loadMessages();
+  };
+
+  async function loadMessages() {
+    const messagesRef = collection(db, "rooms", currentRoom, "messages");
+    const q = query(messagesRef, orderBy("timestamp"));
+
+    onSnapshot(q, (snapshot) => {
+      const messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML = "";
+
+      snapshot.forEach((doc) => {
+        const msg = doc.data();
+        const div = document.createElement("div");
+        div.classList.add("message");
+        div.innerHTML = `<span class="username">${msg.username}:</span> ${msg.text}`;
+        messagesDiv.appendChild(div);
+      });
+
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+  }
+
+  window.sendMessage = async function () {
+    const input = document.getElementById("messageInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    const messagesRef = collection(db, "rooms", currentRoom, "messages");
+
+    await addDoc(messagesRef, {
+      username: username,
+      text: text,
+      timestamp: Date.now()
+    });
+
+    input.value = "";
+  };
+</script>
+
+</body>
+</html>
