@@ -30,8 +30,7 @@ onSnapshot(roomsRef, snapshot => {
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
     const li = document.createElement("li");
-    li.textContent = docSnap.id;
-    if(data.ownerUid === currentUserUid) li.textContent += " 👑";
+    li.textContent = docSnap.id + (data.ownerUid===currentUserUid?" 👑":"");
     li.onclick = () => selectRoom(docSnap.id, data.ownerUid);
     roomList.appendChild(li);
   });
@@ -88,8 +87,8 @@ function loadMembers(){
 clearChatBtn.onclick = async () => {
   if(!currentRoom) return;
   const messagesRef = collection(db, "rooms", currentRoom, "messages");
-  const snapshot = await onSnapshot(messagesRef, s => {
-    s.forEach(msg => deleteDoc(doc(messagesRef, msg.id)));
+  onSnapshot(messagesRef, snapshot => {
+    snapshot.forEach(docSnap => deleteDoc(doc(messagesRef, docSnap.id)));
   });
 };
 
