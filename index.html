@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🔥 GitChat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔥 GitChat</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,14 +13,8 @@
       margin: 0;
       padding: 0;
     }
-
     h1 { margin-top: 20px; }
-
-    #chatContainer {
-      display: none;
-      margin-top: 20px;
-    }
-
+    #chatContainer { display: none; margin-top: 20px; }
     #messages {
       height: 300px;
       overflow-y: auto;
@@ -29,29 +23,15 @@
       margin-bottom: 10px;
       background: #2c2c3c;
     }
-
     input, button {
       padding: 10px;
       margin: 5px;
       border-radius: 5px;
       border: none;
     }
-
-    button {
-      cursor: pointer;
-      background: #5865F2;
-      color: white;
-    }
-
-    .message {
-      text-align: left;
-      margin-bottom: 5px;
-    }
-
-    .username {
-      font-weight: bold;
-      color: #00d4ff;
-    }
+    button { cursor: pointer; background: #5865F2; color: white; }
+    .message { text-align: left; margin-bottom: 5px; }
+    .username { font-weight: bold; color: #00d4ff; }
   </style>
 </head>
 <body>
@@ -79,22 +59,23 @@
   } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-  // 🔥 REPLACE with your Firebase config
+  // 🔥 Replace with your Firebase config
   const firebaseConfig = {
-    apiKey: "AIzaSyCXi-M0wMZT165T9FHCK8Dw-WJK_I1MuDg",
-    authDomain: "gitchat-backend.firebaseapp.com",
-    projectId: "gitchat-backend",
-    storageBucket: "gitchat-backend.firebasestorage.app",
-    messagingSenderId: "385257284178",
-    appId: "1:385257284178:web:20d7ce32ba1b1ed554f58b"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
+  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
 
   // Anonymous login
-  signInAnonymously(auth).then(() => console.log("Logged in anonymously ✅"));
+  signInAnonymously(auth).then(() => console.log("Anonymous login ✅"));
 
   let currentRoom = "";
   let username = "";
