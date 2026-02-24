@@ -7,28 +7,33 @@
 </head>
 <body>
 
+<!-- Profile overlay -->
 <div id="profileOverlay">
-  <h2>Enter Your Profile</h2>
+  <h2>Create Your Profile</h2>
   <input type="text" id="usernameInput" placeholder="Username">
   <input type="text" id="avatarInput" placeholder="Avatar URL (optional)">
   <button id="startChat">Start Chat</button>
 </div>
 
+<!-- Sidebar -->
 <div id="sidebar">
   <h2>Servers</h2>
   <ul id="roomList"></ul>
   <input type="text" id="newRoomName" placeholder="New Room Name">
   <button id="createRoom">Create Room</button>
+
   <h3>Members</h3>
   <div id="memberList"></div>
+
   <button id="clearChatBtn" style="display:none;">Clear Chat Logs</button>
   <button id="disbandBtn" style="display:none;">Disband Server</button>
 </div>
 
+<!-- Chat container -->
 <div id="chatContainer">
-  <h2 id="roomTitle">Select a room</h2>
+  <h2 id="roomTitle">Select a server</h2>
   <div id="messages"></div>
-  
+
   <input type="file" id="fileInput">
   <input type="text" id="messageInput" placeholder="Type a message...">
   <button id="sendMsg">Send</button>
