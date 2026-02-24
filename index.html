@@ -2,25 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GitChat</title>
+  <title>Neon Chat</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="sidebar">
     <h2>Servers</h2>
     <ul id="roomList"></ul>
-    <input type="text" id="newRoomName" placeholder="Create Room">
+    <input type="text" id="newRoomName" placeholder="New Room Name">
     <button id="createRoom">Create Room</button>
   </div>
 
   <div id="chatContainer">
-    <h2 id="roomTitle">Select a room</h2>
+    <h2 id="roomTitle"></h2>
     <div id="messages"></div>
-    <input type="text" id="messageInput" placeholder="Type a message">
+
     <input type="file" id="fileInput">
+    <input type="text" id="messageInput" placeholder="Type a message..." />
     <button id="sendMsg">Send</button>
   </div>
 
+  <!-- Firebase + scripts -->
   <script type="module" src="scripts/firebase.js"></script>
   <script type="module" src="scripts/rooms.js"></script>
   <script type="module" src="scripts/chat.js"></script>
