@@ -118,6 +118,14 @@ button:hover {
 
 .username { font-size: 12px; opacity: 0.7; margin-bottom: 2px; }
 
+.title {
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+.title.Founder { color: gold; }
+.title.Administrator { color: violet; }
+
 .inputRow { display: flex; gap: 8px; }
 
 #messageInput { flex: 1; }
@@ -176,13 +184,19 @@ await signInAnonymously(auth);
 
 let currentRoom = "";
 let username = "";
+let displayName = "";
 let unsubscribe = null;
 
-// Special users with titles and keys
+// Simple obfuscation: shift + base64
+function decodeKey(str) {
+  return atob(str).split('').map(c => String.fromCharCode(c.charCodeAt(0)-3)).join('');
+}
+
+// Special users with obfuscated keys
 const specialUsers = {
-  "AC1DST4R": { title: "Founder", key: "17380324" },
-  "mik": { title: "Administrator", key: "612839" },
-  "s1lv3rsKKy": { title: "Administrator", key: "718233" }
+  "AC1DST4R": { title: "Founder", key: "MTczODAzMjQ=" },        
+  "mik": { title: "Administrator", key: "NjEyODM5" },           
+  "s1lv3rsKKy": { title: "Administrator", key: "NzE4MjMz" }     
 };
 
 window.joinRoom = function() {
@@ -194,12 +208,10 @@ window.joinRoom = function() {
     return;
   }
 
-  // Check if user is special and requires a key
   if (specialUsers[username]) {
-    document.getElementById("keyContainer").style.display = "block";
-    const key = prompt(`✨ Your Username is a ${specialUsers[username].title} ✨\nEnter your key:`);
+    const keyInput = prompt(`✨ Your Username is a ${specialUsers[username].title} ✨\nEnter your key:`);
 
-    if (key !== specialUsers[username].key) {
+    if (keyInput !== decodeKey(specialUsers[username].key)) {
       alert("Invalid key!");
       return;
     }
@@ -208,17 +220,17 @@ window.joinRoom = function() {
   document.getElementById("roomSelection").style.display = "none";
   document.getElementById("chatContainer").style.display = "flex";
 
-  let displayName = username;
+  displayName = username;
   if (specialUsers[username]) {
     displayName += ` (${specialUsers[username].title})`;
   }
 
   document.getElementById("roomTitle").innerText = "Room: " + currentRoom;
 
-  loadMessages(displayName);
+  loadMessages();
 };
 
-function loadMessages(displayName) {
+function loadMessages() {
   if (unsubscribe) unsubscribe();
 
   const messagesRef = collection(db, "rooms", currentRoom, "messages");
@@ -237,7 +249,20 @@ function loadMessages(displayName) {
 
       const usernameDiv = document.createElement("div");
       usernameDiv.classList.add("username");
-      usernameDiv.textContent = msg.username;
+
+      // Split username and title for styling
+      const nameParts = msg.username.match(/(.+?)\s?\((.+)\)?$/);
+      if (nameParts) {
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = nameParts[1];
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = `(${nameParts[2]})`;
+        titleSpan.classList.add("title", nameParts[2]);
+        usernameDiv.appendChild(nameSpan);
+        usernameDiv.appendChild(titleSpan);
+      } else {
+        usernameDiv.textContent = msg.username;
+      }
 
       const bubbleDiv = document.createElement("div");
       bubbleDiv.classList.add("bubble");
@@ -261,7 +286,7 @@ window.sendMessage = async function() {
 
   await addDoc(messagesRef, {
     uid: auth.currentUser.uid,
-    username: username,
+    username: displayName,
     text: text,
     timestamp: Date.now()
   });
