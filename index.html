@@ -16,13 +16,13 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  overflow: hidden; /* Prevent entire page scroll */
+  overflow: hidden;
 }
 
 .card {
   width: 95%;
   max-width: 520px;
-  height: 90vh; /* Fixed height */
+  height: 90vh;
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(15px);
   border-radius: 18px;
@@ -86,8 +86,8 @@ button:hover {
 }
 
 #messages {
-  flex: 1; /* Takes remaining space */
-  overflow-y: auto; /* Only this scrolls */
+  flex: 1;
+  overflow-y: auto;
   min-height: 0;
   background: #1b1b2b;
   border-radius: 14px;
@@ -104,14 +104,8 @@ button:hover {
   animation: fadeIn 0.2s ease;
 }
 
-.message.self {
-  align-self: flex-end;
-  text-align: right;
-}
-
-.message.other {
-  align-self: flex-start;
-}
+.message.self { align-self: flex-end; text-align: right; }
+.message.other { align-self: flex-start; }
 
 .bubble {
   padding: 8px 12px;
@@ -120,29 +114,15 @@ button:hover {
   word-wrap: break-word;
 }
 
-.message.self .bubble {
-  background: #5865F2;
-}
+.message.self .bubble { background: #5865F2; }
 
-.username {
-  font-size: 12px;
-  opacity: 0.7;
-  margin-bottom: 2px;
-}
+.username { font-size: 12px; opacity: 0.7; margin-bottom: 2px; }
 
-.inputRow {
-  display: flex;
-  gap: 8px;
-}
+.inputRow { display: flex; gap: 8px; }
 
-#messageInput {
-  flex: 1;
-}
+#messageInput { flex: 1; }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -152,6 +132,9 @@ button:hover {
 
   <div id="roomSelection">
     <input type="text" id="username" placeholder="Enter Username">
+    <div id="keyContainer" style="display:none;">
+      <input type="text" id="keyInput" placeholder="Enter your key">
+    </div>
     <input type="text" id="roomInput" placeholder="Enter Room Name">
     <button onclick="joinRoom()">Join / Create Room</button>
   </div>
@@ -195,6 +178,13 @@ let currentRoom = "";
 let username = "";
 let unsubscribe = null;
 
+// Special users with titles and keys
+const specialUsers = {
+  "AC1DST4R": { title: "Founder", key: "17380324" },
+  "mik": { title: "Administrator", key: "612839" },
+  "s1lv3rsKKy": { title: "Administrator", key: "718233" }
+};
+
 window.joinRoom = function() {
   username = document.getElementById("username").value.trim();
   currentRoom = document.getElementById("roomInput").value.trim();
@@ -204,14 +194,31 @@ window.joinRoom = function() {
     return;
   }
 
+  // Check if user is special and requires a key
+  if (specialUsers[username]) {
+    document.getElementById("keyContainer").style.display = "block";
+    const key = prompt(`✨ Your Username is a ${specialUsers[username].title} ✨\nEnter your key:`);
+
+    if (key !== specialUsers[username].key) {
+      alert("Invalid key!");
+      return;
+    }
+  }
+
   document.getElementById("roomSelection").style.display = "none";
   document.getElementById("chatContainer").style.display = "flex";
+
+  let displayName = username;
+  if (specialUsers[username]) {
+    displayName += ` (${specialUsers[username].title})`;
+  }
+
   document.getElementById("roomTitle").innerText = "Room: " + currentRoom;
 
-  loadMessages();
+  loadMessages(displayName);
 };
 
-function loadMessages() {
+function loadMessages(displayName) {
   if (unsubscribe) unsubscribe();
 
   const messagesRef = collection(db, "rooms", currentRoom, "messages");
