@@ -187,16 +187,16 @@ let username = "";
 let displayName = "";
 let unsubscribe = null;
 
-// Simple obfuscation: shift + base64
+// Obfuscation functions: shift + Base64
 function decodeKey(str) {
   return atob(str).split('').map(c => String.fromCharCode(c.charCodeAt(0)-3)).join('');
 }
 
-// Special users with obfuscated keys
+// Special users with encoded keys
 const specialUsers = {
-  "AC1DST4R": { title: "Founder", key: "MTczODAzMjQ=" },        
-  "mik": { title: "Administrator", key: "NjEyODM5" },           
-  "s1lv3rsKKy": { title: "Administrator", key: "NzE4MjMz" }     
+  "AC1DST4R": { title: "Founder", key: "NDs2ODEzNTY3" },      
+  "mik": { title: "Administrator", key: "OTQ1NTYy" },           
+  "s1lv3rsKKy": { title: "Administrator", key: "OTkxODM1Ng==" } 
 };
 
 window.joinRoom = function() {
@@ -250,7 +250,6 @@ function loadMessages() {
       const usernameDiv = document.createElement("div");
       usernameDiv.classList.add("username");
 
-      // Split username and title for styling
       const nameParts = msg.username.match(/(.+?)\s?\((.+)\)?$/);
       if (nameParts) {
         const nameSpan = document.createElement("span");
