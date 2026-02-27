@@ -16,11 +16,13 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden; /* Prevent entire page scroll */
 }
 
 .card {
   width: 95%;
   max-width: 520px;
+  height: 90vh; /* Fixed height */
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(15px);
   border-radius: 18px;
@@ -70,7 +72,11 @@ button:hover {
   box-shadow: 0 5px 15px rgba(88,101,242,0.4);
 }
 
-#chatContainer { display: none; flex-direction: column; }
+#chatContainer { 
+  display: none; 
+  flex-direction: column; 
+  flex: 1;
+}
 
 #roomTitle {
   text-align: center;
@@ -79,9 +85,8 @@ button:hover {
 }
 
 #messages {
-  flex: 1;
-  height: 320px;
-  overflow-y: auto;
+  flex: 1; /* Takes remaining space */
+  overflow-y: auto; /* Only this scrolls */
   background: #1b1b2b;
   border-radius: 14px;
   padding: 15px;
@@ -227,7 +232,7 @@ function loadMessages() {
 
       const bubbleDiv = document.createElement("div");
       bubbleDiv.classList.add("bubble");
-      bubbleDiv.textContent = msg.text; // Safe (no innerHTML)
+      bubbleDiv.textContent = msg.text;
 
       msgDiv.appendChild(usernameDiv);
       msgDiv.appendChild(bubbleDiv);
