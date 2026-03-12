@@ -1,143 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔥 GitChat</title>
 
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #252542);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  overflow: hidden;
-}
+<title>GitChat</title>
 
-.card {
-  width: 95%;
-  max-width: 520px;
-  height: 90vh;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-  border-radius: 18px;
-  padding: 25px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-}
+<!-- CSS -->
+<link rel="stylesheet" href="style.css">
 
-h1 { text-align: center; margin-bottom: 15px; font-size: 26px; }
+<!-- Favicons -->
+<link rel="icon" type="image/jpeg" sizes="16x16"
+href="https://raw.githubusercontent.com/AC1DST4R/GitChatV1/main/Photos/favicon%2016x16.jpg">
 
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border-radius: 10px;
-  border: 1px solid #444;
-  background: #2c2c3c;
-  color: white;
-  font-size: 14px;
-  transition: 0.2s ease;
-}
+<link rel="icon" type="image/jpeg" sizes="32x32"
+href="https://raw.githubusercontent.com/AC1DST4R/GitChatV1/main/Photos/favicon%2032x32.jpg">
 
-input:focus {
-  outline: none;
-  border-color: #5865F2;
-  box-shadow: 0 0 8px rgba(88,101,242,0.6);
-}
+<link rel="icon" type="image/jpeg" sizes="48x48"
+href="https://raw.githubusercontent.com/AC1DST4R/GitChatV1/main/Photos/favicon%2048x48.jpg">
 
-button {
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, #5865F2, #4752c4);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
+<link rel="apple-touch-icon" sizes="150x150"
+href="https://raw.githubusercontent.com/AC1DST4R/GitChatV1/main/Photos/touchicon%20150x150.jpg">
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(88,101,242,0.4);
-}
+<!-- Social Preview -->
+<meta property="og:title" content="GitChat">
+<meta property="og:description" content="Real-time chat rooms coded by AC1DST4R">
+<meta property="og:image"
+content="https://raw.githubusercontent.com/AC1DST4R/GitChatV1/main/Photos/touchicon%20150x150.jpg">
+<meta property="og:type" content="website">
 
-#chatContainer { display: none; flex-direction: column; flex: 1; min-height: 0; }
+<meta name="twitter:card" content="summary_large_image">
 
-#roomTitle { text-align: center; margin-bottom: 10px; opacity: 0.8; }
-
-#messages {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-  background: #1b1b2b;
-  border-radius: 14px;
-  padding: 15px;
-  margin-bottom: 10px;
-  scroll-behavior: smooth;
-}
-
-.message { margin-bottom: 10px; display: flex; flex-direction: column; max-width: 75%; animation: fadeIn 0.2s ease; }
-.message.self { align-self: flex-end; text-align: right; }
-.message.other { align-self: flex-start; }
-
-.bubble { padding: 8px 12px; border-radius: 12px; background: rgba(255,255,255,0.07); word-wrap: break-word; }
-.message.self .bubble { background: #5865F2; }
-
-.username { font-size: 12px; opacity: 0.7; margin-bottom: 2px; }
-.title { font-weight: bold; margin-left: 4px; }
-.title.Founder { color: gold; }
-.title.Administrator { color: violet; }
-
-.inputRow { display: flex; gap: 8px; }
-#messageInput { flex: 1; }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-</style>
 </head>
+
+
 <body>
 
 <div class="card">
-  <h1>🔥 GitChat</h1>
 
-  <div id="roomSelection">
-    <input type="text" id="username" placeholder="Enter Username">
-    <input type="text" id="roomInput" placeholder="Enter Room Name">
-    <button onclick="joinRoom()">Join / Create Room</button>
-  </div>
+<h1>🔥 GitChat</h1>
 
-  <div id="chatContainer">
-    <h3 id="roomTitle"></h3>
-    <div id="messages"></div>
+<div id="roomSelection">
 
-    <div class="inputRow">
-      <input type="text" id="messageInput"
-             placeholder="Type message..."
-             onkeydown="if(event.key==='Enter') sendMessage()">
-      <button onclick="sendMessage()">Send</button>
-    </div>
-  </div>
+<input type="text" id="username" placeholder="Enter Username">
+<input type="text" id="roomInput" placeholder="Enter Room Name">
+
+<button onclick="joinRoom()">Join / Create Room</button>
+
 </div>
 
+
+<div id="chatContainer">
+
+<h3 id="roomTitle"></h3>
+
+<div id="messages"></div>
+
+<div class="inputRow">
+
+<input
+type="text"
+id="messageInput"
+placeholder="Type message..."
+onkeydown="if(event.key==='Enter') sendMessage()"
+>
+
+<button onclick="sendMessage()">Send</button>
+
+</div>
+
+</div>
+
+</div>
+
+
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-// Firebase config
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCXi-M0wMZT165T9FHCK8Dw-WJK_I1MuDg",
-  authDomain: "gitchat-backend.firebaseapp.com",
-  projectId: "gitchat-backend",
-  storageBucket: "gitchat-backend.firebasestorage.app",
-  messagingSenderId: "385257284178",
-  appId: "1:385257284178:web:20d7ce32ba1b1ed554f58b"
+apiKey: "AIzaSyCXi-M0wMZT165T9FHCK8Dw-WJK_I1MuDg",
+authDomain: "gitchat-backend.firebaseapp.com",
+projectId: "gitchat-backend",
+storageBucket: "gitchat-backend.firebasestorage.app",
+messagingSenderId: "385257284178",
+appId: "1:385257284178:web:20d7ce32ba1b1ed554f58b"
 };
+
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -145,111 +99,176 @@ const auth = getAuth(app);
 
 await signInAnonymously(auth);
 
+
 let currentRoom = "";
 let username = "";
 let displayName = "";
 let unsubscribe = null;
 
+
 const specialUsers = {
-  "AC1DST4R": { title: "Founder", key: "17380324" },
-  "mik": { title: "Administrator", key: "612839" },
-  "s1lv3rsKKy": { title: "Administrator", key: "718233" }
+
+"AC1DST4R": { title: "Founder", key: "17380324" },
+"mik": { title: "Administrator", key: "612839" },
+"s1lv3rsKKy": { title: "Administrator", key: "718233" }
+
 };
 
-// Simple key decoder
-function decodeKey(key) { return key; }
 
-window.joinRoom = function() {
-  username = document.getElementById("username").value.trim();
-  currentRoom = document.getElementById("roomInput").value.trim();
-
-  if (!username || !currentRoom) {
-    alert("Enter username and room name!");
-    return;
-  }
-
-  if (specialUsers[username]) {
-    const keyInput = prompt(`✨ Your Username is a ${specialUsers[username].title} ✨\nEnter your key:`);
-
-    if (keyInput !== decodeKey(specialUsers[username].key)) {
-      alert("Invalid key!");
-      return;
-    }
-  }
-
-  document.getElementById("roomSelection").style.display = "none";
-  document.getElementById("chatContainer").style.display = "flex";
-
-  displayName = username;
-  if (specialUsers[username]) displayName += ` (${specialUsers[username].title})`;
-
-  document.getElementById("roomTitle").innerText = "Room: " + currentRoom;
-
-  loadMessages();
-};
-
-function loadMessages() {
-  if (unsubscribe) unsubscribe();
-
-  const messagesRef = collection(db, "rooms", currentRoom, "messages");
-  const q = query(messagesRef, orderBy("timestamp"));
-
-  unsubscribe = onSnapshot(q, snapshot => {
-    const messagesDiv = document.getElementById("messages");
-    messagesDiv.innerHTML = "";
-
-    snapshot.forEach(doc => {
-      const msg = doc.data();
-
-      const msgDiv = document.createElement("div");
-      msgDiv.classList.add("message");
-      msgDiv.classList.add(msg.uid === auth.currentUser.uid ? "self" : "other");
-
-      const usernameDiv = document.createElement("div");
-      usernameDiv.classList.add("username");
-
-      const nameParts = msg.username.match(/(.+?)\s?\((.+)\)?$/);
-      if (nameParts) {
-        const nameSpan = document.createElement("span");
-        nameSpan.textContent = nameParts[1];
-        const titleSpan = document.createElement("span");
-        titleSpan.textContent = `(${nameParts[2]})`;
-        titleSpan.classList.add("title", nameParts[2]);
-        usernameDiv.appendChild(nameSpan);
-        usernameDiv.appendChild(titleSpan);
-      } else {
-        usernameDiv.textContent = msg.username;
-      }
-
-      const bubbleDiv = document.createElement("div");
-      bubbleDiv.classList.add("bubble");
-      bubbleDiv.textContent = msg.text;
-
-      msgDiv.appendChild(usernameDiv);
-      msgDiv.appendChild(bubbleDiv);
-      messagesDiv.appendChild(msgDiv);
-    });
-
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  });
+function decodeKey(key){
+return key;
 }
 
-window.sendMessage = async function() {
-  const input = document.getElementById("messageInput");
-  const text = input.value.trim();
-  if (!text) return;
 
-  const messagesRef = collection(db, "rooms", currentRoom, "messages");
+window.joinRoom = function(){
 
-  await addDoc(messagesRef, {
-    uid: auth.currentUser.uid,
-    username: displayName,
-    text: text,
-    timestamp: Date.now()
-  });
+username = document.getElementById("username").value.trim();
+currentRoom = document.getElementById("roomInput").value.trim();
 
-  input.value = "";
+if(!username || !currentRoom){
+
+alert("Enter username and room name!");
+return;
+
+}
+
+
+if(specialUsers[username]){
+
+const keyInput = prompt(`✨ Your Username is a ${specialUsers[username].title} ✨\nEnter your key:`);
+
+if(keyInput !== decodeKey(specialUsers[username].key)){
+
+alert("Invalid key!");
+return;
+
+}
+
+}
+
+
+document.getElementById("roomSelection").style.display="none";
+document.getElementById("chatContainer").style.display="flex";
+
+
+displayName = username;
+
+if(specialUsers[username])
+displayName += ` (${specialUsers[username].title})`;
+
+
+document.getElementById("roomTitle").innerText = "Room: " + currentRoom;
+
+loadMessages();
+
+}
+
+
+
+function loadMessages(){
+
+if(unsubscribe) unsubscribe();
+
+const messagesRef = collection(db,"rooms",currentRoom,"messages");
+
+const q = query(messagesRef,orderBy("timestamp"));
+
+
+unsubscribe = onSnapshot(q,snapshot=>{
+
+const messagesDiv = document.getElementById("messages");
+
+messagesDiv.innerHTML = "";
+
+
+snapshot.forEach(doc=>{
+
+const msg = doc.data();
+
+const msgDiv = document.createElement("div");
+
+msgDiv.classList.add("message");
+
+msgDiv.classList.add(msg.uid===auth.currentUser.uid?"self":"other");
+
+
+const usernameDiv = document.createElement("div");
+
+usernameDiv.classList.add("username");
+
+
+const nameParts = msg.username.match(/(.+?)\s?\((.+)\)?$/);
+
+if(nameParts){
+
+const nameSpan = document.createElement("span");
+nameSpan.textContent = nameParts[1];
+
+const titleSpan = document.createElement("span");
+titleSpan.textContent = `(${nameParts[2]})`;
+titleSpan.classList.add("title",nameParts[2]);
+
+usernameDiv.appendChild(nameSpan);
+usernameDiv.appendChild(titleSpan);
+
+}
+else{
+
+usernameDiv.textContent = msg.username;
+
+}
+
+
+const bubbleDiv = document.createElement("div");
+
+bubbleDiv.classList.add("bubble");
+
+bubbleDiv.textContent = msg.text;
+
+
+msgDiv.appendChild(usernameDiv);
+
+msgDiv.appendChild(bubbleDiv);
+
+messagesDiv.appendChild(msgDiv);
+
+});
+
+
+messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+});
+
+}
+
+
+
+window.sendMessage = async function(){
+
+const input = document.getElementById("messageInput");
+
+const text = input.value.trim();
+
+if(!text) return;
+
+
+const messagesRef = collection(db,"rooms",currentRoom,"messages");
+
+
+await addDoc(messagesRef,{
+
+uid: auth.currentUser.uid,
+username: displayName,
+text: text,
+timestamp: Date.now()
+
+});
+
+
+input.value = "";
+
 };
+
 </script>
 
 </body>
